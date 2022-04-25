@@ -1,60 +1,84 @@
+# ======================================
+# IMPORT PACKAGES
+# ======================================
 from classes import *
+import detail_course as dc
 
-courses = [Course('Course 1'),Course('Course 2')]
 
-# --- VIEW ALL COURSES ---
-
-def all_courses():
+# ======================================
+# FUNCTIONS
+# ======================================
+def all_courses(app,y='None'):
+    app.course_details = False
+    app.view_all = True
     print('\nCourse Name:\n----------')
     i = 0
-    while i < len(courses):
-        print(courses[i].name)
+    while i < len(app.courses):
+        print(app.courses[i].name)
         i+=1
     print('----------\n')
 
-# --- EDIT COURSES ---
-def add_course():
-    course_title=str(input("\nPlease enter the name of the course you wish to add. >>>\t"))
-    courses.append(Course(course_title))
-    print("%s successfully added to course list.\n\n"%course_title)
+def add_course(app,y='None'):
+    course_title=str(input("\nPlease enter the name of the course you wish to add.\n>>>\t"))
+    if course_title.lower() in app.exit_commands:
+        pass
+    else:
+        app.courses.append(Course(course_title))
+        print("%s successfully added to course list.\n"%course_title)
+    all_courses(app)
 
-def rename_course():
-    pass
+def rename_course(app,y='None'):
+    old_name = str(input("Please enter the name of the course you wish to edit.\n>>>\t"))
+    target =''
+    for c in app.courses:
+        if c.name == old_name:
+            target=c
 
-def delete_course():
-    # This command should also delete/remove all assignments associated with the course.
-    course_title=str(input("\nPlease enter the name of the course you wish to delete. >>>\t"))
+    if target =='':
+        if old_name.lower() in app.exit_commands:
+            all_courses(app)
+        else:
+            print("\nSorry, no course of that name could be found. Please try again.")
+            rename_course(app)
+    else:
+        new_name(app,target,old_name)
+
+def new_name(app,target='x',old_name='x'):
+    if app.course_details:
+        target=app.current_course
+        old_name = app.current_course.name
+
+    new_name = str(input('Please enter the new name for "%s".\n>>>\t'%old_name))
+
+    if old_name.lower() in app.exit_commands:
+        pass
+    else:
+        target.name = new_name
+    if app.view_all:
+        all_courses(app)
+    elif app.course_details:
+        dc.view_course(app)
+    else:
+        print("Sorry, there was an error.")
+        all_courses(app)
+    
+
+def delete_course(app,y='None'):
+    course_title=str(input("\nPlease enter the name of the course you wish to delete.\n>>>\t"))
 
     removed=[]
-    for c in courses:
+    for c in app.courses:
         if c.name == course_title:
-            courses.remove(c)
+            app.courses.remove(c)
             removed.append(c)
     
     if len(removed)==0:
-        print ("\nSorry, no course of that name could be found. Please try again.\n\n")
+        if course_title.lower() in app.exit_commands:
+            pass
+        else:
+            print ("\nSorry, no course of that name could be found. Please try again.\n")
+            delete_course(app)
     else:
-        print ('\n%s successfully removed from course list.\n\n'%course_title)
-
-# --- ASSIGNMENT COMMANDS ---
-
-def add_assignment():
-    course_title=str(input("\nPlease enter the name of the course. >>>\t"))
-
-    added=[]
-    for c in courses:
-        if c.name == course_title:
-            added.append(c)
+        print ('\n%s successfully removed from course list.\n'%course_title)
     
-    if len(added)==0:
-        print ("Sorry, no course of that name could be found. Please try again.\n\n")
-    else:
-        assignment_title=str(input("\nPlease enter the name of the new assignment. >>>\t"))
-        added[0].assignments.append(Assignment(assignment_title))
-        print ('%s successfully added to %s.\n\n'%(assignment_title, course_title))
-
-def rename_assignment():
-    pass
-
-def delete_assignment():
-    pass
+    all_courses(app)

@@ -27,3 +27,6 @@ Student Data table:
 - Update student grade for an assignment
 - Delete assignments in a course
 - Delete a grade for an assignment
+
+# Additional Info:
+[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/PyCQA/pylint)
