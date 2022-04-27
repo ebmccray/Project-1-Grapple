@@ -1,4 +1,10 @@
 # ======================================
+# DESCRIPTION
+# ======================================
+# This script defines all the commands in the All Courses Menu and View, such as adding, renaming, and deleting courses.
+
+
+# ======================================
 # IMPORT PACKAGES
 # ======================================
 from classes import *
@@ -8,77 +14,107 @@ import detail_course as dc
 # ======================================
 # FUNCTIONS
 # ======================================
+
+# Print a list of all courses.
 def all_courses(app,y='None'):
+    # Set the view variables.
     app.course_details = False
     app.view_all = True
+
+    # Print a list of all the course names.
     print('\nCourse Name:\n----------')
-    i = 0
-    while i < len(app.courses):
-        print(app.courses[i].name)
-        i+=1
+    for i in courses.find():
+        print(i['Name'])
     print('----------\n')
 
+# Add a course to the list of courses.
 def add_course(app,y='None'):
+    # Get a new title from the user.
     course_title=str(input("\nPlease enter the name of the course you wish to add.\n>>>\t"))
+
+    # If it's one of our cancel comman synonyms, go back to the All Courses View.
     if course_title.lower() in app.exit_commands:
         pass
+    # Otherwise, add the course to the list of courses, and inform the user this has occurred.
     else:
-        app.courses.append(Course(course_title))
+        Course(course_title)
+
         print("%s successfully added to course list.\n"%course_title)
+
     all_courses(app)
 
+# Rename a course already in the list of courses, and pass it to the new name function.
 def rename_course(app,y='None'):
-    old_name = str(input("Please enter the name of the course you wish to edit.\n>>>\t"))
-    target =''
-    for c in app.courses:
-        if c.name == old_name:
-            target=c
+    # Get the old title from the user.
+    old_title = str(input("Please enter the name of the course you wish to edit.\n>>>\t"))
 
-    if target =='':
-        if old_name.lower() in app.exit_commands:
+    # Find the Course object corresponding to our title, if it exists in our course list.
+    target_course = [x for x in courses.find() if x['Name'] == old_title]
+
+    # If there is no such course in the course list, check to see if the command was a back or exit command.
+    if len(target_course) == 0:
+        # If so, return to All Courses View.
+        if old_title.lower() in app.exit_commands:
             all_courses(app)
+        # Otherwise, inform the user we couldn't find a target with that name.
         else:
             print("\nSorry, no course of that name could be found. Please try again.")
             rename_course(app)
-    else:
-        new_name(app,target,old_name)
 
-def new_name(app,target='x',old_name='x'):
+    # Otherwise, run the new_title function with our target course and old title.
+    else:
+        new_title(app,old_title)
+
+# Rename a given course.
+def new_title(app, old_title='x'):
+    # If we're editing the course name from the course details view, we use the current course as our target.
     if app.course_details:
-        target=app.current_course
-        old_name = app.current_course.name
+        for x in courses.find({'_id':app.current_course}):
+            old_title = x['Title']
 
-    new_name = str(input('Please enter the new name for "%s".\n>>>\t'%old_name))
+    # Get a new title from the user.
+    new_title = str(input('Please enter the new name for "%s".\n>>>\t'%old_title))
 
-    if old_name.lower() in app.exit_commands:
+    # Check to see if the input is actually a back command.
+    if new_title.lower() in app.exit_commands:
         pass
+    # Otherwise, set the course's title to the new title.
     else:
-        target.name = new_name
+        filter = {'Name': old_title}
+        new_value = {"$set": {'Name':new_title}}
+        courses.update_one(filter,new_value)
+    
+    # If we were in the All Courses View, return to that.
     if app.view_all:
         all_courses(app)
+    # Otherwise, if we were in the Course Details view, return to that.
     elif app.course_details:
         dc.view_course(app)
+    # Otherwise, print a short error message and go to All Courses view.
     else:
         print("Sorry, there was an error.")
         all_courses(app)
     
-
+# Remove a course from the list of courses.
 def delete_course(app,y='None'):
+    # Get the title of the course from the user.
     course_title=str(input("\nPlease enter the name of the course you wish to delete.\n>>>\t"))
 
-    removed=[]
-    for c in app.courses:
-        if c.name == course_title:
-            app.courses.remove(c)
-            removed.append(c)
+    # Find the Course object corresponding to our title, if it exists in our course list.
+    target_course=[x for x in courses.find() if x['Name'] == course_title]
     
-    if len(removed)==0:
+    # If we did not find any such title, check to see if it was a back command. Otherwise, print an error message.
+    if len(target_course)==0:
         if course_title.lower() in app.exit_commands:
             pass
         else:
             print ("\nSorry, no course of that name could be found. Please try again.\n")
             delete_course(app)
+
+    # If we found the course, remove it from the list of courses. The inform the user we've done so.
     else:
+        courses.delete_one({'Title':course_title})
         print ('\n%s successfully removed from course list.\n'%course_title)
     
+    # Return to the All Courses View.
     all_courses(app)
