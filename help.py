@@ -11,7 +11,7 @@ help_message = '''\nGet help with:\n\tAll Courses View\n\tCourse Detail View
 If you need additional help, please see the README document or contact the creator with your questions.'''
 
 course_message = '''\nThe All Courses view shows a list of all your courses.
-\nHere are some common All Courses View commands:
+Here are some common All Courses View commands:
 \tcourses:\tView a list of all your currently available courses.
 \tadd course:\tAdds a new course to your list of courses.
 \trename course:\tChanges the name of an existing course.
@@ -19,17 +19,18 @@ course_message = '''\nThe All Courses view shows a list of all your courses.
 \tview course:\tOpens a detail view of the course, students, assignments, and grades.'''
 
 course_detail_message = '''\n The Course Detail View shows the students and assignments currently in the course.
-\n Here are some common Course Detail View commands:
-\tswitch course:\tChanges your view to a different course.
-\trename course:\tChanges the name of the course you are currently viewing.
-\tadd assignment:\tAdds an assignment to your course.
+Here are some common Course Detail View commands:
+\tswitch course:\t\tChanges your view to a different course.
+\tview failing:\t\tShows only students whose total grade is below a minimum threshold.
+\trename course:\t\tChanges the name of the course you are currently viewing.
+\tadd assignment:\t\tAdds an assignment to your course.
 \trename assignment:\tChanges the name of an existing assignment.
 \tdelete assignment:\tRemoves an assignment from the current course.
-\tadd student:\tAdds a new student to the current course.
-\trename student:\tChange the name of an existing student in the current course.
-\tremove student:\tRemove a student from the current course.
-\tenter grades:\tEnter the grades for all students in a given assignment.
-\tedit grade:\tChange or enter a grade for a specific student in a given assignment.'''
+\tadd student:\t\tAdds a new student to the current course.
+\trename student:\t\tChange the name of an existing student in the current course.
+\tremove student:\t\tRemove a student from the current course.
+\tenter grades:\t\tEnter the grades for all students in a given assignment.
+\tedit grade:\t\tChange or enter a grade for a specific student in a given assignment.'''
 
 
 # ======================================

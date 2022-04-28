@@ -28,5 +28,6 @@ Student Data table:
 - Delete assignments in a course
 - Delete a grade for an assignment
 
-# Additional Info:
+# Additional Info and Sources:
+https://www.bggofurther.com/2015/01/create-an-interactive-command-line-menu-using-python/
 [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/PyCQA/pylint)

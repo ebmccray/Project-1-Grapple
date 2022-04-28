@@ -7,16 +7,18 @@
 # ======================================
 # IMPORT PACKAGES
 # ======================================
-import configuration as config
+# import configuration as config
 
 
 # ======================================
 # FUNCTIONS
 # ======================================
 
+app_name = "Grapple"
+
 # Print a welcome message to the console.
 def welcome(x='None',y='None'):
-    print('Hello, welcome to %s!'%config.app_name+"\n"*10)
+    print('Hello, welcome to %s!'%app_name+"\n"*10)
 
 # Show the options on the main menu.
 def main_menu(app,y='None'):
