@@ -10,6 +10,7 @@
 from classes import *
 from database_handling import *
 from configuration import *
+import menu_options
 
 
 # ======================================
@@ -28,7 +29,7 @@ def switch_course(app,y='None'):
     if len(target_course) == 0:
         # If so, return to the All Courses View and reset the view and menu variables in the Event Handler.
         if course_title.lower() in exit_commands:
-            app.view_courses_menu['view_all'](app)
+            menu_options.view_courses_menu['view_all'](app)
             app.current_menu = app.view_courses_menu
             app.course_details = False
 

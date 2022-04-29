@@ -16,7 +16,7 @@ import configuration as config
 
 # Print a welcome message to the console.
 def welcome(x='None',y='None'):
-    print('\nHello, welcome to %s!'%config.app_name+"\n"*10)
+    print('\n'*8 + 'Hello, welcome to %s!\n'%config.app_name)
 
 # Show the options on the main menu.
 def main_menu(app,y='None'):

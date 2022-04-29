@@ -9,6 +9,7 @@
 # ======================================
 from command_handling import *
 from main_menu import *
+from event_handler import EventHandler
 
 
 # ======================================
