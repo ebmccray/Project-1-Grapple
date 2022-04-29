@@ -14,7 +14,9 @@ import help
 import course_commands as cc
 import detail_course as dc
 import grade
-
+from classes import *
+from database_handling import *
+from configuration import *
 
 # ======================================
 # EVENT HANDLER
@@ -27,41 +29,7 @@ class EventHandler():
         self.course_details = False
         self.sort_view = 'last_name_asc'
 
-
-        # Define lists of commands and their synonyms.
-        self.exit_commands = ['quit','cancel','back','exit','return','escape','none']
-        self.back_commands=['back','return','previous']
-        self.confirm_commands=['yes','y','true']
-        self.command_synonyms=[
-                ['view_all','all_courses','my_courses','view_courses','all_courses_view'],
-                ['add_course','new_course','add_new_course','create_course'],
-                ['rename_course','change_course_name','change_course'],
-                ['delete_course','remove_course','drop_course'],
-                ['view_course','view_details','edit_course','course_details','view_course_details','course_details_view','course_detail','course_detail_view','view_course_detail'],
-                ['switch_course','switch_view'],
-                ['view_failing','failing','flag_failing','view_minimum','view_min','flag_min'],
-                ['sort_by_last_name','sort_last_name','sort_name','sort_by_name','sort_alphabetical','sort_last_name_alphabetical','sort_name_alphabetical','sort_by_last_name_alphabetical','sort_by_name_alphabetical'],
-                ['sort_by_grade','sort_by_total_grade','sort_grade','sort_total_grade','sort_by_grade_ascending','sort_by_grade_asc','sort_by_grade_1','sort_by_total_grade_ascending','sort_by_total_grade_asc','sort_by_total_grade_1','sort_grade_ascending','sort_grade_asc','sort_grade_1','sort_total_grade_ascending','sort_total_grade_asc','sort_total_grade_1','sort_by_grade_lowest_first','sort_grade_lowest_first','sort_total_grade_lowest_first','sort_by_total_grade_lowest_first','sort_by_grade_lowest','sort_grade_lowest','sort_total_grade_lowest','sort_by_total_grade_lowest'],
-                ['sort_by_grade_descending','sort_by_grade_desc','sort_by_grade_-1','sort_by_total_grade_descending','sort_by_total_grade_desc','sort_by_total_grade_-1','sort_grade_descending','sort_grade_desc','sort_grade_-1','sort_total_grade_descending','sort_total_grade_desc','sort_total_grade_-1','sort_by_grade_highest_first','sort_grade_highest_first','sort_total_grade_highest_first','sort_by_total_grade_highest_first','sort_by_grade_highest','sort_grade_highest','sort_total_grade_highest','sort_by_total_grade_highest'],
-                ['sort_reverse_alphabetical,sort_reverse','sort_by_reverse','sort_by_reverse_alphabetical'],
-                ['add_assignment','new_assignment','add_new_assignment','create_assignment'],
-                ['rename_assignment','edit_assignment'],
-                ['delete_assignment','remove_assignment','drop_assignment'],
-                ['add_student','new_student','add_new_student','enroll_student','enroll_new_student'],
-                ['add_multiple_students','add_many_students','add_students'],
-                ['rename_student','change_student_name'],
-                ['delete_student','remove_student','drop_student','kick_student','expel_student'],
-                ['view_grades','view_assignment_grades'],
-                ['set_grades','grade_assignment','grade_all','grade'],
-                ['edit_grade','set_grade','change_grade'],
-                ['home','main'],
-                ['back','return'],
-                ['quit','exit']
-                ]
-
-
-        # Define actions for the different menus in Dictionaries. These can be accessed and executed later view the Key name.
-
+        # Define actions for the different menus in Dictionaries. These can be accessed and executed later via the Key name.
         # Main menu actions.
         self.main_menu_actions = {
             'default_command': mm.main_menu,
@@ -126,7 +94,6 @@ class EventHandler():
             'quit': app_quit,
         }
 
-
         # Define which menu a command switches to.
         self.menu_options = {
             'home':self.main_menu_actions,
@@ -135,7 +102,6 @@ class EventHandler():
             'view_course':self.course_details_menu,
         }
         
-
         # Set Event Handler variables.
         self.current_menu = self.main_menu_actions
         self.prev_menu = self.main_menu_actions
@@ -149,57 +115,86 @@ class EventHandler():
 # ======================================
 
 # Recieve user input and excecute it as an order.
-# Note: get_input and parse_order are separated here in order to facilitate easy execution of orders, even when the user has not specified an input.
+# Note: get_input, parse_order, and execute_menu_order are separated here in order to facilitate easy execution of orders, even when the user has not specified an input.
 def get_input(app):
     order = str(input('>>> \t'))
     o = order.replace(' ','_')
     parse_order(app, o)
 
 
-# Execute an order, based on the EventHandling class.
+# Try to understand the different components of the order.
 def parse_order(app, o):
     # If the user entered nothing, run the default command on the current menu.
     if o == "":
         app.current_menu['default_command'](app)
     
-    # Otherwise, try to execute the order.
+    # Otherwise try to understand the components of the command.
     else:
+        # Split the order to see if the first word is "view"
         split_order = o.split('_')
+
         if split_order[0].lower() =='view':
             course_name = ''
 
+            # If so, take remaining words in the command and turn it into a single string.
             i = 1
             while i < len(split_order):
                 course_name += split_order[i]+' '
                 i += 1
             course_name = course_name.strip()
             
-            result = cc.view_specific_course(app,course_name)
+            # Run the view_specific_course function, using the remainder of the order as our command, and return a True or False value.
+            result = view_specific_course(app,course_name)
 
+            # If so, go directly to viewing that course.
             if result:
                 dc.view_course(app)
-                
+            # Otherwise, try to execute the view command.    
             else:
                 order= o.lower()
                 execute_menu_order(app,order)
+
+        # If the first word is not view, execute the command.   
         else:
             order = o.lower()
             execute_menu_order(app,order)
-            
+
+
+# Execute an order on the current menu.
 def execute_menu_order(app,order):
     try:
         # If the order is one of the command synonmyns, then set the order to the default version of the synonym.
-        for x in app.command_synonyms:
+        for x in command_synonyms:
             if order in x:
                 order=x[0]
 
-        # Exceute the order
+        # Execute the order
         app.current_menu[order](app,order)
 
     # If we run into a KeyError exception because the order is not one of the command synonyms, print an error message and reset to the current menu.
     except KeyError:
         print('\nSorry, "%s" was not a recognized command. Try entering "help" for a list of available commands.\n'%order)
         app.current_menu['default_command'](app)
+
+
+# Look for a specific course, based on its name.
+def view_specific_course(app,course_name):
+    # Get a list of all courses in the current course list to see if it matches the name we've been given.
+    target_course = [x['_id'] for x in courses.find({'Name':course_name})]
+
+    # If no such course exists, the result is false.
+    if len(target_course) == 0:
+        result = False
+
+    # Otherwise, the result is true, and we will switch the properties of the event manage to indicate that we are viewing that course now.
+    else:
+        result = True
+        app.course_details = True
+        app.current_menu = app.menu_options['view_course']
+        app.current_course = target_course[0]
+
+    # Return the result.
+    return result
 
     
 
@@ -210,7 +205,7 @@ def app_quit(app,y='none'):
     quit()
 
 
-# Switch the current menu to use when executing orders.
+# Change which menu to use when executing orders.
 def set_current_menu(app,menu):
     # If the user wishes to go back, set the new menu to the previous menu and set our current menu as the previous menu.
     if menu =='back':
@@ -227,4 +222,4 @@ def set_current_menu(app,menu):
 
     # Set the current menu to the new menu, and run the default menu command.
     app.current_menu = app.new_menu
-    parse_order(app,'default_command')
+    execute_menu_order(app,'default_command')
