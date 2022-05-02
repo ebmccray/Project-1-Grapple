@@ -61,7 +61,7 @@ course_details_menu = {
     'add_multiple_students':dc.add_multiple_students,
     'rename_student':dc.rename_student,
     'delete_student':dc.delete_student,
-    'set_grades':grade.set_grade,
+    'set_grades':grade.set_all_grades,
     'view_grades':grade.view_grade,
     'edit_grade':grade.edit_grade,
     'view_all':set_current_menu,

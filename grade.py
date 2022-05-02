@@ -13,7 +13,7 @@ from database_handling import *
 from configuration import *
 
 # Choose an assignment and pick whether to input as points or percentage.
-def set_grade(app,y='None'):
+def set_all_grades(app,y='None'):
     # Set view variable accordingly.
     app.course_details = True
 
@@ -29,7 +29,7 @@ def set_grade(app,y='None'):
             pass
         else:
             print("Sorry, no assignment of that name could be found. Please try again.")
-            set_grade(app)
+            set_all_grades(app)
 
     # If the assignment was found, run the percent_or_points function.
     else:
@@ -97,7 +97,7 @@ def view_grade(app,y='None'):
             dc.view_course(app)
         else:
             print("Sorry, no assignment of that name could be found. Please try again.")
-            set_grade(app)
+            set_all_grades(app)
 
     # If an assignment was found, get the correctly-sorted student list, and print the column headers.
     else:
@@ -110,7 +110,7 @@ def view_grade(app,y='None'):
             s_id = str(s['_id'])
             name_length = len(s['First Name'])+len(s['Last Name'])+1
 
-            # Try to calculate the percentage grade based on the total points possible in the assignment. If the grade is not a number, the grade is nothing.
+            # Try to calculate the percentage grade based on the total points possible in the assignment. If the grade is not a number, the grade is
             try:
                 g_perc = str((round(a[s_id]/a['Total Points'],2))*100)
             except TypeError:
@@ -145,14 +145,14 @@ def tgt_student(app,assignment_title='None',assignment_id='None',perc_or_points=
             print("Sorry, no student with that name could be found. Please try again.")
             tgt_student(app)
     
-    # If a student was found, set the target student to the first returned item, and run the edit_specific_grade function.
+    # If a student was found, set the target student to the first returned item, and run the change_specific_grade_value function.
     else:
         s = target_student[0]
-        edit_specific_grade(app,s,assignment_title,assignment_id, perc_or_points,points)
+        change_specific_grade_value(app,s,assignment_title,assignment_id, perc_or_points,points)
 
 
 # Change the grade of a given student for a given assignment.
-def edit_specific_grade(app,s, assignment_title, assignment_id, perc_or_points,points):
+def change_specific_grade_value(app,s, assignment_title, assignment_id, perc_or_points,points):
     # Print column headers.
     print('Student Name          | %s | Total Points %i'%(assignment_title,points))
 
