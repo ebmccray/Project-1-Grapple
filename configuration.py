@@ -19,7 +19,7 @@ exit_commands = ['quit','cancel','back','exit','return','escape','none']
 back_commands=['back','return','previous']
 confirm_commands=['yes','y','true']
 command_synonyms=[
-    ['view_all','all_courses','my_courses','view_courses','all_courses_view','view_all_courses'],
+    ['view_all','all_courses','my_courses','view_courses','all_courses_view','view_all_courses', 'courses'],
     ['add_course','new_course','add_new_course','create_course'],
     ['rename_course','change_course_name','change_course'],
     ['delete_course','remove_course','drop_course'],

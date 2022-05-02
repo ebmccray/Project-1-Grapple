@@ -33,13 +33,12 @@ def set_all_grades(app,y='None'):
 
     # If the assignment was found, run the percent_or_points function.
     else:
-        percent_or_points(app, assignment_title, target_assignment, assign_grades)
+        percent_or_points(app, assignment_title, target_assignment, assign_grades, target_assignment[0]['Total Points'])
 
 
 # For a given assignment, set grades for each student in the current course.
-def assign_grades(app, assignment_title, target_assignment, perc_or_points):
+def assign_grades(app, assignment_title, target_assignment, perc_or_points, points):
     # Get the total points for the assignment and a sorted student list.
-    points = target_assignment[0]['Total Points']
     student_list = dc.sort_student_list(app)
 
     # Print the header
