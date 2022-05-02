@@ -39,7 +39,7 @@ command_synonyms=[
     ['delete_student','remove_student','drop_student','kick_student','expel_student'],
     ['view_grades','view_assignment_grades'],
     ['set_grades','grade_assignment','grade_all','grade'],
-    ['edit_grade','set_grade','change_grade'],
+    ['edit_grade','set_grade','change_grade','edit_student_grade'],
     ['info','app_info','about','about_app','copyright','copyright_info'],
     ['home','main'],
     ['back','return'],

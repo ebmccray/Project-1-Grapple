@@ -27,6 +27,7 @@ def all_courses(app,y='None'):
     for i in courses.find():
         print(i['Name'])
     print('----------\n')
+    print('Menu:\tNew Course\tRename Course\tDelete Course\tView Course')
 
 
 # Add a course to the list of courses.

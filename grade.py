@@ -5,12 +5,17 @@
 
 
 # ======================================
-# FUNCTIONS
+# IMPORT
 # ======================================
 import detail_course as dc
 from classes import *
 from database_handling import *
 from configuration import *
+
+
+# ======================================
+# FUNCTIONS
+# ======================================
 
 # Choose an assignment and pick whether to input as points or percentage.
 def set_all_grades(app,y='None'):
@@ -85,7 +90,7 @@ def view_grade(app,y='None'):
     app.course_details = True
 
     # Get input from the user regardling what assignment to show.
-    assignment_title = str(input("Please enter the name of the assignment you wish to view.\n>>>\t"))
+    assignment_title = str(input("Please enter the name of the assignment you wish to view.\n>>>\t")).strip()
 
     # Get a list of all assignments with the given title associated with the current course.
     target_assignment=[x for x in all_assignments.find({'CourseID':app.current_course,'Name':assignment_title})]
@@ -112,6 +117,8 @@ def view_grade(app,y='None'):
             # Try to calculate the percentage grade based on the total points possible in the assignment. If the grade is not a number, the grade is
             try:
                 g_perc = str((round(a[s_id]/a['Total Points'],2))*100)
+            except KeyError:
+                g_perc = ''
             except TypeError:
                 g_perc = ''
 
@@ -125,7 +132,7 @@ def view_grade(app,y='None'):
 # Target a specific student's grade for the given assignment.
 def tgt_student(app,assignment_title='None',assignment_id='None',perc_or_points='percentage',points=0):
     # Get input from the user for the name of the student.
-    student_name = str(input("Which student's grade would you like to edit?\n>>>\t"))
+    student_name = str(input("Which student's grade would you like to edit?\n>>>\t")).strip()
     # Split the name into first and last names. If there is no last name, make it blank.
     first_name = student_name.split()[0]
     try:

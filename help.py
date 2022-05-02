@@ -12,7 +12,7 @@ import configuration as config
 # HELP MESSAGES
 # ======================================
 help_message = '''\nGet help with:\n\tAll Courses View\n\tCourse Detail View\n\tApp Info
-If you need additional help, please see the README document or contact the creator with your questions.'''
+If you need additional help, please contact the creator with your questions.'''
 
 course_message = '''\nThe All Courses view shows a list of all your courses.
 Here are some common All Courses View commands:

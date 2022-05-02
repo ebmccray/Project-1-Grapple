@@ -20,7 +20,7 @@ import menu_options
 # Choose which course to view the details of.
 def switch_course(app,y='None'):
     # Get course title from the user.
-    course_title=str(input("\nPlease enter the name of the course.\n>>>\t"))
+    course_title=str(input("\nPlease enter the name of the course.\n>>>\t")).strip()
 
     # Find the corresponding course by name, if it exists in the course list.
     target_course = find_relevant(courses,'_id','Name',course_title)
@@ -114,7 +114,6 @@ def sort_by(app, y='None'):
 
     # Print the final line of the table and a description of the sorting method.    
     print('-'*(len(header_length)+1)+'\n')
-
     print('Showing: All students by %s.'%descriptor)
 
 
@@ -143,7 +142,11 @@ def sort_by_grade_descending(app,y='None'):
 # Print a list of only students who are below a certain threshhold.
 def view_failing(app,x='None'):
     # Get a minimum grade to compare from the user.
-    min_grade = float(input("Please input a minimum grade threshold.\n>>>\t"))
+    try:
+        min_grade = float(input("Please input a minimum grade threshold.\n>>>\t"))
+    except:
+        print("Sorry, that was not a valid grade input. Please try again.")
+        view_failing(app)
 
     # Print the headers, and return their names and the total length.
     headers_and_length = print_headers(app)
@@ -208,25 +211,27 @@ def add_assignment(app,y='None'):
     course_title = find_relevant(courses,'Name','_id',app.current_course)
 
     # Get a title input from the user.
-    assignment_title=str(input("\nPlease enter the name of the new assignment.\n>>>\t"))
+    assignment_title=str(input("\nPlease enter the name of the new assignment.\n>>>\t")).strip()
 
     # Check to see if the input is one of our exit commands. If it is, do nothing.
     if assignment_title.lower() in exit_commands:
         pass  
     # Otherwise, ask the user how many points they want the assignment to be worth, and then create the assignment, associated with the current course.
     else:
-        points_worth = float(input("How many points is %s worth?\n>>>\t"%assignment_title))
+        try:
+            points_worth = float(input("How many points is %s worth?\n>>>\t"%assignment_title))
+            Assignment(assignment_title, app.current_course,points_worth)
+            print ('%s successfully added to %s.\n'%(assignment_title,course_title[0]))
+        except:
+            print("Sorry, that was not a valid grade input.")
         
-        Assignment(assignment_title, app.current_course,points_worth)
-        print ('%s successfully added to %s.\n'%(assignment_title,course_title[0]))
-
     view_course(app)
 
 
 # Rename an existing assignment in the course.
 def rename_assignment(app,y='None'):
     # Get title input from the user.
-    old_title = str(input("Please enter the name of the assignment you wish to edit.\n>>>\t"))
+    old_title = str(input("Please enter the name of the assignment you wish to edit.\n>>>\t")).strip()
 
     # Search for the assignment in the collection of all assignments, if it is associated with the current course.
     target_assignment =[x for x in all_assignments.find({'CourseID':app.current_course,'Name':old_title})]
@@ -241,7 +246,7 @@ def rename_assignment(app,y='None'):
 
     # If we found an Assignment, get input from the user for the new title.
     else:
-        new_title = str(input('Please enter the new name for "%s".\n>>>\t'%old_title))
+        new_title = str(input('Please enter the new name for "%s".\n>>>\t'%old_title)).strip()
         # Check to see if the input is one of the back commands.
         if new_title.lower() in exit_commands:
             pass
@@ -256,7 +261,7 @@ def delete_assignment(app,y='None'):
     # Get the name of the course as part of a list.
     course_title = find_relevant(courses,'Name','_id',app.current_course)
     # Get title input from the user.
-    title = str(input("\nPlease enter the name of the assignment you wish to delete.\n>>>\t"))
+    title = str(input("\nPlease enter the name of the assignment you wish to delete.\n>>>\t")).strip()
 
     # Search for the assignment in the collection of all assignments, if it is associated with the current course.
     target_assignment =[x['_id'] for x in all_assignments.find({'CourseID':app.current_course, 'Name':title})]
@@ -280,7 +285,7 @@ def delete_assignment(app,y='None'):
 # Add a student to the course.
 def add_student(app, y='None'):
     # Get a name input from the user.
-    name = str(input("\nPlease enter the student's name.\n>>>\t"))
+    name = str(input("\nPlease enter the student's name.\n>>>\t")).strip()
 
     # If the input is an exit command, do nothing.
     if name.lower() in exit_commands:
@@ -307,7 +312,7 @@ def add_multiple_students(app,y='None'):
     # While inputting, allow the user to input names of students.
     inputting = True
     while inputting:
-        name=str(input('>>>\t'))
+        name=str(input('>>>\t')).strip()
         # If the name is actually an exit command, stop inputting and break the loop.
         if name in exit_commands:
             inputting = False
@@ -330,7 +335,7 @@ def add_multiple_students(app,y='None'):
 # Edit the name of an existing student in the course.
 def rename_student(app,y='None'):
     # Get input from the user for the student's old name.
-    old_name = str(input("Please enter the name of the student you wish to edit.\n>>>\t"))
+    old_name = str(input("Please enter the name of the student you wish to edit.\n>>>\t")).strip()
 
     # Split the name into first and last names. If there is no last name, make it blank.
     old_first = old_name.split()[0]
@@ -352,7 +357,7 @@ def rename_student(app,y='None'):
 
     # Otherwise, get a new name for the student.
     else:
-        new_name = str(input('Please enter the new name for "%s".\n>>>\t'%old_name))
+        new_name = str(input('Please enter the new name for "%s".\n>>>\t'%old_name)).strip()
 
         # Split the name into first and last names. If there is no last name, make it blank.
         new_first = new_name.split()[0]
@@ -378,7 +383,7 @@ def delete_student(app,y='None'):
     course_title = find_relevant(courses,'Name','_id',app.current_course)
 
     # Get input from the user for the student to be deleted.
-    name = str(input("\nPlease enter the name of the student you wish to remove from the course.\n>>>\t"))
+    name = str(input("\nPlease enter the name of the student you wish to remove from the course.\n>>>\t")).strip()
 
     # Split the name into first and last names. If there is no last name, make it blank.
     first_name = name.split()[0]
