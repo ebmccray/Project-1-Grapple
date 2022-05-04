@@ -19,6 +19,7 @@ class EventHandler():
         self.running = True
         self.view_all = False
         self.course_details = False
+        self.view_grades = False
         self.sort_view = 'last_name_asc'
 
         # Set Event Handler variables.
@@ -27,6 +28,7 @@ class EventHandler():
         self.new_menu = main_menu_actions
 
         self.current_course = None
+        self.current_assignment = None
 
         # Define which menu a command switches to.
         self.menu_options = {

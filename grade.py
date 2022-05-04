@@ -23,7 +23,7 @@ def set_all_grades(app,y='None'):
     app.course_details = True
 
     # Get an input for the assignment name from the user.
-    assignment_title = str(input("Please enter the name of the assignment you wish to grade.\n>>>\t"))
+    assignment_title = str(input("Please enter the name of the assignment you wish to grade.\n>>>\t")).strip()
 
     # Get a list of all assignments with that name associated with the current course.
     target_assignment=[x for x in all_assignments.find({'CourseID':app.current_course, 'Name':assignment_title})]
@@ -56,7 +56,7 @@ def assign_grades(app, assignment_title, target_assignment, perc_or_points, poin
         print(s['First Name']+ " " + s['Last Name'] +(" "*(len('Student Name ')-name_length)) + "| ", end=' ')
 
         # Get an inputted grade from the user.
-        grade=input()
+        grade=input().strip()
 
         # If the grade was in the list of exit commands, break the loop.
         if grade in exit_commands:
@@ -89,11 +89,15 @@ def view_grade(app,y='None'):
     # Set view variables accordingly.
     app.course_details = True
 
-    # Get input from the user regardling what assignment to show.
-    assignment_title = str(input("Please enter the name of the assignment you wish to view.\n>>>\t")).strip()
-
-    # Get a list of all assignments with the given title associated with the current course.
-    target_assignment=[x for x in all_assignments.find({'CourseID':app.current_course,'Name':assignment_title})]
+    if app.view_grades:
+        target_assignment = [x for x in all_assignments.find({'_id':app.current_assignment})]
+        assignment_title = target_assignment[0]['Name']
+    else:
+        # Get input from the user regardling what assignment to show.
+        assignment_title = str(input("Please enter the name of the assignment you wish to view.\n>>>\t")).strip()
+        # Get a list of all assignments with the given title associated with the current course.
+        target_assignment=[x for x in all_assignments.find({'CourseID':app.current_course,'Name':assignment_title})]
+        
 
     # If no assignment was found, see if the input was an exit command. If so, return to Course Details View. Otherwise, print an error message and start over.
     if len(target_assignment)==0:
@@ -101,7 +105,7 @@ def view_grade(app,y='None'):
             dc.view_course(app)
         else:
             print("Sorry, no assignment of that name could be found. Please try again.")
-            set_all_grades(app)
+            view_grade(app)
 
     # If an assignment was found, get the correctly-sorted student list, and print the column headers.
     else:

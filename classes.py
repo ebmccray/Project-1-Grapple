@@ -54,11 +54,16 @@ def find_relevant(database, get_field='', criteria_field='', search_criteria='')
 # Look for a student in the all students collection, or create a new one if no such student exists.
 def find_or_create_student(name,course_id):
     # Split the name entry into first and last names - if there is only one name, make the last name blank.
+    split_names = name.split()
     first_name = name.split()[0]
     try:
         last_name= name.split()[1]
     except IndexError:
         last_name = ''
+    
+    if len(split_names) > 2:
+        for n in split_names[2:len(split_names)]:
+            last_name += (' ' + n)
 
     # Define lists of commands and command synonyms.
     enroll_commands = ['enroll','enroll_this','this_student','enroll_student','this_one','this',name]

@@ -11,7 +11,7 @@ from classes import *
 from database_handling import *
 from configuration import *
 import menu_options
-
+import grade
 
 # ======================================
 # FUNCTIONS
@@ -30,7 +30,7 @@ def switch_course(app,y='None'):
         # If so, return to the All Courses View and reset the view and menu variables in the Event Handler.
         if course_title.lower() in exit_commands:
             menu_options.view_courses_menu['view_all'](app)
-            app.current_menu = app.view_courses_menu
+            app.current_menu = menu_options.view_courses_menu
             app.course_details = False
 
         # Otherwise, inform the user their course could not be found.
@@ -49,6 +49,7 @@ def switch_course(app,y='None'):
 def view_course(app, y='None'):
     # Set the view variables.
     app.view_all = False
+    app.view_grades = False
 
     # If we've already selected a course, display the details associated with it using the sort_by function.
     if app.course_details:
@@ -115,6 +116,7 @@ def sort_by(app, y='None'):
     # Print the final line of the table and a description of the sorting method.    
     print('-'*(len(header_length)+1)+'\n')
     print('Showing: All students by %s.'%descriptor)
+    print("Menu:\tGrade Assignment   Edit Grade\tAdd Assignment\tDelete Assignment\tEnroll Student\tDelete Student\n\tRename Assignment/Student/Course\n\tSort by:\tLast Name\tGrade\tHighest First\tLowest First\n\tView Failing")
 
 
 # VARIOUS SORTING FUNCTIONS
@@ -209,13 +211,23 @@ def calculate_total_grade(app,s_id):
 def add_assignment(app,y='None'):
     # Get the name of the current course as part of a list.
     course_title = find_relevant(courses,'Name','_id',app.current_course)
+    matching_assignment = [x for x in all_assignments.find({'CourseID':app.current_course,'Name':course_title})]
 
     # Get a title input from the user.
     assignment_title=str(input("\nPlease enter the name of the new assignment.\n>>>\t")).strip()
 
     # Check to see if the input is one of our exit commands. If it is, do nothing.
     if assignment_title.lower() in exit_commands:
-        pass  
+        view_course(app)
+
+    elif len(matching_assignment) > 0:
+        response = str(input("An assignment called %s already exists for %s. Would you like to view grades for this assignment?\n>>>\t"%(assignment_title,course_title[0]))).strip().lower()
+        if response in confirm_commands:
+            app.view_grades = True
+            app.current_assignment = matching_assignment[0]['_id']
+            grade.view_grade(app)
+        else:
+            view_course(app)
     # Otherwise, ask the user how many points they want the assignment to be worth, and then create the assignment, associated with the current course.
     else:
         try:
@@ -224,8 +236,10 @@ def add_assignment(app,y='None'):
             print ('%s successfully added to %s.\n'%(assignment_title,course_title[0]))
         except:
             print("Sorry, that was not a valid grade input.")
+
+        view_course(app)
         
-    view_course(app)
+   
 
 
 # Rename an existing assignment in the course.
@@ -338,42 +352,70 @@ def rename_student(app,y='None'):
     old_name = str(input("Please enter the name of the student you wish to edit.\n>>>\t")).strip()
 
     # Split the name into first and last names. If there is no last name, make it blank.
-    old_first = old_name.split()[0]
+    name_split = old_name.split()
+
+    old_first = name_split[0]
     try:
-        old_last= old_name.split()[1]
+        old_last= name_split[1]
     except IndexError:
         old_last = ''
 
+    if len(name_split) > 2:
+        for n in name_split[2:len(name_split)]:
+            old_last += (' ' + n)
+
     # Get a list of all student ids which match the entered first and last name.
-    target_student = [x['_id'] for x in all_students.find({'First Name':old_first,'Last Name':old_last})]
+    target_student = [x for x in all_students.find({'First Name':old_first,'Last Name':old_last,'CourseID':app.current_course})]
 
     # If no such student was found, check to see if the name was in our exit commands. If so, do nothing. Otherwise, print an error message and start over.
     if len(target_student) == 0:
         if old_name.lower() in exit_commands:
-            pass
+            view_course(app)
         else:
             print("\nSorry, no student of that name could be found in the current course. Please try again.")
             rename_student(app)
-
+    elif len(target_student) > 1:
+        print("There are %i students with that name found."%len(target_student))
+        for index, s in enumerate(target_student):
+            print("%i: %s %s  -  Courses:\t"%(index,s['First Name'],s['Last Name']), end=' ')
+            for c in s['CourseID']:
+                student_courses = [x for x in courses.find({'_id':c})]
+                print(student_courses[0]['Name'], end= ' ')
+            print('')
+        try:
+            response = int(input("Which student would you like to select?\n>>>\t"))
+            target_student = [target_student[response]]
+            assign_new_student_name(app,old_name,target_student)
+        except TypeError:
+            print("Sorry, that was not a valid answer. Please try again.")
+            view_course(app)
     # Otherwise, get a new name for the student.
     else:
-        new_name = str(input('Please enter the new name for "%s".\n>>>\t'%old_name)).strip()
+        assign_new_student_name(app,old_name,target_student)
 
-        # Split the name into first and last names. If there is no last name, make it blank.
-        new_first = new_name.split()[0]
-        try:
-            new_last= new_name.split()[1]
-        except IndexError:
-            new_last = ''
+def assign_new_student_name(app,old_name,target_student):
+    new_name = str(input('Please enter the new name for "%s".\n>>>\t'%old_name)).strip()
 
-        # Check to see if the new name is in the list of exit commands. If so, do nothing.
-        if new_name.lower() in exit_commands:
-            pass
-        # Otherwise, update the student collection to reflect this student's new name.
-        else:
-            all_students.update_one({'_id':target_student[0]},{'$set': {'First Name':new_first,'Last Name':new_last}})
+    name_split = new_name.split()
 
-    # Regardless, return to the Course Details View.  
+    # Split the name into first and last names. If there is no last name, make it blank.
+    new_first = name_split[0]
+    try:
+        new_last= name_split[1]
+    except IndexError:
+        new_last = ''
+
+    if len(name_split) > 2:
+        for n in name_split[2:len(name_split)]:
+            new_last += (' ' + n)
+
+    # Check to see if the new name is in the list of exit commands. If so, do nothing.
+    if new_name.lower() in exit_commands:
+        pass
+    # Otherwise, update the student collection to reflect this student's new name.
+    else:
+        all_students.update_one({'_id':target_student[0]['_id']},{'$set': {'First Name':new_first,'Last Name':new_last}})
+
     view_course(app)
 
 
@@ -385,12 +427,19 @@ def delete_student(app,y='None'):
     # Get input from the user for the student to be deleted.
     name = str(input("\nPlease enter the name of the student you wish to remove from the course.\n>>>\t")).strip()
 
+    name_split = name.split()
+
     # Split the name into first and last names. If there is no last name, make it blank.
-    first_name = name.split()[0]
+    first_name = name_split[0]
+
     try:
-        last_name= name.split()[1]
+        last_name= name_split[1]
     except IndexError:
         last_name = ''
+
+    if len(name_split) > 2:
+        for n in name_split[2:len(name_split)]:
+            last_name += (' ' + n)
 
     # Get a list of all students who have that same first and last name and are enrolled in the current course.
     target_student = [x['_id'] for x in all_students.find({'First Name':first_name,'Last Name':last_name,'CourseID':app.current_course})]
@@ -405,10 +454,15 @@ def delete_student(app,y='None'):
     
     # If we found the student, remove the current course ID from their list of courses, remove their total grade in this course, and get rid of any grades they have in all assignments associated with the current course.
     else:
-        all_students.update_one({'_id':target_student[0]},{'$pull': {'CourseID':app.current_course}})
-        all_students.update_one({'_id':target_student[0]},{'$unset': {'Total Grade %s'%app.current_course:''}})
-        all_assignments.update_many({'CourseID':app.current_course},{'$unset':{str(target_student[0]):""}})
-        print("%s was successfully deleted from student list of %s."%(name,course_title[0]))
+        response = str(input("Are you sure you wish to delete %s and their grades for all assignments in this course?\n>>>\t"%name)).strip().lower()
+
+        if response in confirm_commands:
+            all_students.update_one({'_id':target_student[0]},{'$pull': {'CourseID':app.current_course}})
+            all_students.update_one({'_id':target_student[0]},{'$unset': {'Total Grade %s'%app.current_course:''}})
+            all_assignments.update_many({'CourseID':app.current_course},{'$unset':{str(target_student[0]):""}})
+            print("%s was successfully deleted from student list of %s."%(name,course_title[0]))
+        else:
+            pass
 
     # Regardless, return to the Course Details View
     view_course(app)

@@ -11,6 +11,7 @@ from classes import *
 from database_handling import *
 from configuration import *
 import detail_course as dc
+import menu_options
 
 # ======================================
 # FUNCTIONS
@@ -34,18 +35,28 @@ def all_courses(app,y='None'):
 def add_course(app,y='None'):
     # Get a new title from the user.
     course_title=str(input("\nPlease enter the name of the course you wish to add.\n>>>\t")).strip()
+    matching_courses = [x for x in courses.find({'Name':course_title})]
 
     # If it's one of our cancel command synonyms, go back to the All Courses View.
     if course_title.lower() in exit_commands:
-        pass
+        all_courses(app)
     # Otherwise, add the course to the list of courses, and inform the user this has occurred.
+    elif len(matching_courses) > 0 :
+        response = str(input("%s already exists. Would you like to view this course?\n>>>\t"%course_title)).strip().lower()
+        if response in confirm_commands:
+            app.current_course = matching_courses[0]['_id']
+            app.current_menu = menu_options.course_details_menu
+            app.course_details = True
+            dc.view_course(app)
+        else:
+            all_courses(app)
     else:
-        course_title = course_title.strip()
         Course(course_title)
 
         print("%s successfully added to course list.\n"%course_title)
+        all_courses(app)
 
-    all_courses(app)
+    
 
 
 # Rename a course already in the list of courses, and pass it to the new name function.
