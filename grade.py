@@ -22,11 +22,16 @@ def set_all_grades(app,y='None'):
     # Set view variable accordingly.
     app.course_details = True
 
-    # Get an input for the assignment name from the user.
-    assignment_title = str(input("Please enter the name of the assignment you wish to grade.\n>>>\t")).strip()
+    if app.view_assignment_details or app.view_grades:
+        target_assignment = [x for x in all_assignments.find({'_id':app.current_assignment})]
+        assignment_title = target_assignment[0]['Name']
 
-    # Get a list of all assignments with that name associated with the current course.
-    target_assignment=[x for x in all_assignments.find({'CourseID':app.current_course, 'Name':assignment_title})]
+    else:
+        # Get an input for the assignment name from the user.
+        assignment_title = str(input("Please enter the name of the assignment you wish to grade.\n>>>\t")).strip()
+
+        # Get a list of all assignments with that name associated with the current course.
+        target_assignment=[x for x in all_assignments.find({'CourseID':app.current_course, 'Name':assignment_title})]
 
     # If no such assignment was found, check to see if the name was an exit command. If so, do nothing. Otherwise, print an error message and start over.
     if len(target_assignment)==0:
@@ -81,7 +86,7 @@ def assign_grades(app, assignment_title, target_assignment, perc_or_points, poin
             all_assignments.update_one({'_id':target_assignment[0]['_id']},{'$set':{str(s['_id']):grade_input}})
 
     # Return to course details view.
-    dc.sort_by(app)
+    app.current_menu['default_command'](app)
 
 
 # Choose an assignment and show the list of all students and their grade in the assignment.
@@ -89,7 +94,7 @@ def view_grade(app,y='None'):
     # Set view variables accordingly.
     app.course_details = True
 
-    if app.view_grades:
+    if app.view_grades or app.view_assignment_details:
         target_assignment = [x for x in all_assignments.find({'_id':app.current_assignment})]
         assignment_title = target_assignment[0]['Name']
     else:
@@ -190,7 +195,7 @@ def change_specific_grade_value(app,s, assignment_title, assignment_id, perc_or_
     all_assignments.update_one({'_id':assignment_id},{'$set': {str(s['_id']):grade_input}})
 
     # Return to the Course Details View.
-    dc.view_course(app)
+    app.current_menu['default_command'](app)
 
 
 # View all student grades in an assignment, and then edit a specific student's grade.
@@ -211,7 +216,7 @@ def edit_grade(app,y='None'):
 
     # If the assignment title was an exit command, return to the Course Details View
     if assignment_title in exit_commands:
-        dc.view_course(app)
+        app.current_menu['default_command'](app)
 
     # Otherwise, run the percent_or_points function.
     else:
@@ -225,7 +230,7 @@ def percent_or_points(app, assignment_title, target_assignment, function, points
 
     # If the input was in the exit commands, return to the course details view.
     if perc_or_points in exit_commands:
-        dc.view_course(app)
+        app.current_menu['default_command'](app)
     # If the input was either percentage or points, run the associated function.
     elif perc_or_points == 'percentage' or perc_or_points == 'points':
         function(app,assignment_title,target_assignment,perc_or_points,points)
@@ -233,4 +238,4 @@ def percent_or_points(app, assignment_title, target_assignment, function, points
     # Otherwise, print an error message and start over.
     else:
         print("Sorry, I didn't understand that. Please try again.")
-        dc.view_course(app)
+        app.current_menu['default_command'](app)

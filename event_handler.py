@@ -20,6 +20,7 @@ class EventHandler():
         self.view_all = False
         self.course_details = False
         self.view_grades = False
+        self.view_assignment_details = False
         self.sort_view = 'last_name_asc'
 
         # Set Event Handler variables.
@@ -36,4 +37,5 @@ class EventHandler():
             'help':help_menu_actions,
             'view_all':view_courses_menu,
             'view_course':course_details_menu,
+            'view_assignment':assignment_details_menu,
         }

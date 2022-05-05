@@ -1,7 +1,7 @@
 # ======================================
 # DESCRIPTION
 # ======================================
-# This script defines the functions of the Course Details View, such as seeing all students and assignments, editing, adding, and removing assignments, and editing, adding, and removing students.
+# This script defines the functions of the Course Details View, such as seeing all students and assignments, sorting students by various criteria, and editing, adding, and removing students.
 
 
 # ======================================
@@ -11,7 +11,7 @@ from classes import *
 from database_handling import *
 from configuration import *
 import menu_options
-import grade
+import assignment_details as ad
 
 # ======================================
 # FUNCTIONS
@@ -42,7 +42,10 @@ def switch_course(app,y='None'):
     else:
         app.course_details=True
         app.current_course = target_course[0]
-        view_course(app)
+        if app.view_assignment_details:
+            ad.switch_assignments(app)
+        else:
+            view_course(app)
 
 
 # View the Students, Assignments, and Grades associated with the currently-selected course.
@@ -50,6 +53,7 @@ def view_course(app, y='None'):
     # Set the view variables.
     app.view_all = False
     app.view_grades = False
+    app.view_assignment_details = False
 
     # If we've already selected a course, display the details associated with it using the sort_by function.
     if app.course_details:
@@ -205,95 +209,6 @@ def calculate_total_grade(app,s_id):
     all_students.update_many({'_id':s_id},{'$set':{'Total Grade %s'%str(app.current_course):result}})
 
     return result
-
-
-# Add an assignment to the list of assignments in the course.
-def add_assignment(app,y='None'):
-    # Get the name of the current course as part of a list.
-    course_title = find_relevant(courses,'Name','_id',app.current_course)
-    matching_assignment = [x for x in all_assignments.find({'CourseID':app.current_course,'Name':course_title})]
-
-    # Get a title input from the user.
-    assignment_title=str(input("\nPlease enter the name of the new assignment.\n>>>\t")).strip()
-
-    # Check to see if the input is one of our exit commands. If it is, do nothing.
-    if assignment_title.lower() in exit_commands:
-        view_course(app)
-
-    elif len(matching_assignment) > 0:
-        response = str(input("An assignment called %s already exists for %s. Would you like to view grades for this assignment?\n>>>\t"%(assignment_title,course_title[0]))).strip().lower()
-        if response in confirm_commands:
-            app.view_grades = True
-            app.current_assignment = matching_assignment[0]['_id']
-            grade.view_grade(app)
-        else:
-            view_course(app)
-    # Otherwise, ask the user how many points they want the assignment to be worth, and then create the assignment, associated with the current course.
-    else:
-        try:
-            points_worth = float(input("How many points is %s worth?\n>>>\t"%assignment_title))
-            Assignment(assignment_title, app.current_course,points_worth)
-            print ('%s successfully added to %s.\n'%(assignment_title,course_title[0]))
-        except:
-            print("Sorry, that was not a valid grade input.")
-
-        view_course(app)
-        
-   
-
-
-# Rename an existing assignment in the course.
-def rename_assignment(app,y='None'):
-    # Get title input from the user.
-    old_title = str(input("Please enter the name of the assignment you wish to edit.\n>>>\t")).strip()
-
-    # Search for the assignment in the collection of all assignments, if it is associated with the current course.
-    target_assignment =[x for x in all_assignments.find({'CourseID':app.current_course,'Name':old_title})]
-
-    # If we didn't find an assignment, check to see if it was actually a back command, and go back if it was. Otherwise, print an error and restart.
-    if len(target_assignment) == 0:
-        if old_title.lower() in exit_commands:
-            pass
-        else:
-            print("\nSorry, no assignment of that name could be found in the current course. Please try again.")
-            rename_assignment(app)
-
-    # If we found an Assignment, get input from the user for the new title.
-    else:
-        new_title = str(input('Please enter the new name for "%s".\n>>>\t'%old_title)).strip()
-        # Check to see if the input is one of the back commands.
-        if new_title.lower() in exit_commands:
-            pass
-        # Otherwise, update the name of the assignment.
-        else:
-            all_assignments.update_one({'Name':old_title},{'$set':{'Name':new_title}})
-    view_course(app)
-
-
-# Remove an assignment from the course.
-def delete_assignment(app,y='None'):
-    # Get the name of the course as part of a list.
-    course_title = find_relevant(courses,'Name','_id',app.current_course)
-    # Get title input from the user.
-    title = str(input("\nPlease enter the name of the assignment you wish to delete.\n>>>\t")).strip()
-
-    # Search for the assignment in the collection of all assignments, if it is associated with the current course.
-    target_assignment =[x['_id'] for x in all_assignments.find({'CourseID':app.current_course, 'Name':title})]
-
-    # If we didn't find an assignment, check to see if it was actually a back command, and go back if it was. Otherwise, print an error and restart.
-    if len(target_assignment) ==0:
-        if title.lower() in exit_commands:
-            pass
-        else:
-            print("Sorry, no assignment of that name could be found. Please try again.")
-            delete_assignment(app)
-
-    # Otherwise, remove the assignment from the collection of all assignments.
-    else:
-        all_assignments.delete_many({'_id':target_assignment[0]})
-        print("%s was successfully deleted from the assignment list of %s."%(title,course_title[0]))
-
-    view_course(app)
 
 
 # Add a student to the course.
@@ -475,7 +390,7 @@ def print_headers(app):
     # Get the name of the current course.
     course_title = [x['Name'] for x in courses.find({'_id':app.current_course})]
     # Get a list of the names of all assignments associated with the current course.
-    assignment_list = [a['Name'] for a in all_assignments.find({'CourseID':app.current_course})]
+    assignment_list = [a['Name'] for a in all_assignments.find({'CourseID':app.current_course}).sort('Date Due',1)]
     
     # Add assignment names to the column headers.
     column_headers += assignment_list
@@ -517,7 +432,7 @@ def print_student_grades(app,s,column_headers):
     print('| '+ s['First Name'] + ' ' + s['Last Name'] + (' '*name_space)+'| '+ total_grade+(' '*grade_space), end=' ')
 
     # For each assignment associated with each student...
-    for a in all_assignments.find({'CourseID':app.current_course}):
+    for a in all_assignments.find({'CourseID':app.current_course}).sort('Date Due',1):
         # Try to find their grade for the given assignment.
         try:
             g = a[id_str]

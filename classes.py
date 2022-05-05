@@ -15,10 +15,10 @@ from database_handling import *
 
 # The Assignment class.
 class Assignment():
-    def __init__(self,title,courseID,points):
+    def __init__(self,title,courseID,points,assigned_date):
         self.title=title
         # Upon creation of the class, insert the assignment into the list of all assignments.
-        all_assignments.insert_one({'Name':title,'CourseID':courseID,'Total Points':points})
+        all_assignments.insert_one({'Name':title,'CourseID':courseID,'Total Points':points,'Date Due':str(assigned_date)})
 
 # The Student class
 class Student():

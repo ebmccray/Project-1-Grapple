@@ -23,10 +23,13 @@ def main_menu(app,y='None'):
     # Set the view variables.
     app.view_all = False
     app.course_details = False
+    app.view_assignment_details = False
+    app.view_grades = False
 
     # Print main menu options options.
     print('''Welcome to the main menu! Please enter one of following options:
     View All:\t\tShow a list of all your available courses
     View Course:\tShow students and grades of a specific course.
+    View Assignment:\tShow the details of a particular assignment.
     Help:\t\tView help topics.
     Quit:\t\tExit the program.\n''')

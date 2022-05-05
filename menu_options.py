@@ -3,6 +3,7 @@ import help
 import course_commands as cc
 import detail_course as dc
 import grade
+import assignment_details as ad
 from command_handling import *
 
 # Define actions for the different menus in Dictionaries. These can be accessed and executed later via the Key name.
@@ -12,6 +13,7 @@ main_menu_actions = {
     'help': set_current_menu,
     'view_all':set_current_menu,
     'view_course':set_current_menu,
+    'view_assignment':set_current_menu,
     'home': mm.main_menu,
     'back':set_current_menu,
     'quit': app_quit,
@@ -54,9 +56,10 @@ course_details_menu = {
     'sort_by_grade':dc.sort_by_grade,
     'sort_by_grade_descending':dc.sort_by_grade_descending,
     'rename_course':cc.new_title,
-    'add_assignment':dc.add_assignment,
-    'rename_assignment':dc.rename_assignment,
-    'delete_assignment':dc.delete_assignment,
+    'view_assignment':set_current_menu,
+    'add_assignment':ad.add_assignment,
+    'rename_assignment':ad.rename_assignment,
+    'delete_assignment':ad.delete_assignment,
     'add_student': dc.add_student,
     'add_multiple_students':dc.add_multiple_students,
     'rename_student':dc.rename_student,
@@ -70,3 +73,19 @@ course_details_menu = {
     'back':set_current_menu,
     'quit': app_quit,
 }
+
+assignment_details_menu = {
+    'default_command':ad.view_assignment_details,
+    'view_assignment':ad.view_assignment_details,
+    'switch_assignment':ad.switch_assignments,
+    'rename_assignment':ad.rename_assignment,
+    'edit_points':ad.edit_points,
+    'edit_date':ad.edit_date,
+    'view_grades':grade.view_grade,
+    'set_grades':grade.set_all_grades,
+    'edit_grade':grade.edit_grade,
+    'view_course':set_current_menu,
+    'home':set_current_menu,
+    'back':set_current_menu,
+    'quit': app_quit,
+    }
