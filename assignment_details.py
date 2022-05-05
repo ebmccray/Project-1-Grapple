@@ -7,6 +7,7 @@
 # ======================================
 # IMPORT PACKAGES
 # ======================================
+from ast import Index
 from classes import *
 from database_handling import *
 from configuration import *
@@ -230,10 +231,12 @@ def rename_assignment(app,y='None'):
     else:
         # Get title input from the user.
         old_title = str(input("Please enter the name of the assignment you wish to edit.\n>>>\t")).strip()
-
         # Search for the assignment in the collection of all assignments, if it is associated with the current course.
         matching_assignments = [x for x in all_assignments.find({'CourseID':app.current_course,'Name':old_title})]
-        target_assignment = matching_assignments[0]
+        try:
+            target_assignment = matching_assignments[0]
+        except IndexError:
+            target_assignment = None
 
     # If we didn't find an assignment, check to see if it was actually a back command, and go back if it was. Otherwise, print an error and restart.
     if len(matching_assignments) == 0:

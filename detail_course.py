@@ -470,7 +470,7 @@ def print_student_grades(app,s,column_headers):
             # If the grade is 0 or anything else...
             elif g == 0 or g:
                 # Calculate the percentage grade based on the total points possible in the assignment.
-                g_perc = str(float(g/a['Total Points'])*100.0)
+                g_perc = str(round((float(g/a['Total Points'])*100.0),2))
                 # Calculate how much blank spaces is necessary to make the columns match up, then print the grade and blank space.
                 add = len(a['Name'])-len(g_perc)
                 print('| '+g_perc+(' '*add), end=' ')
