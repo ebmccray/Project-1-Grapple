@@ -1,7 +1,7 @@
 # ======================================
 # DESCRIPTION
 # ======================================
-# This script defines all the commands in the All Courses Menu and View, such as adding, renaming, and deleting courses.
+# This script defines the functions of the All Courses view, such as adding, renaming, and deleting courses.
 
 
 # ======================================
@@ -13,6 +13,7 @@ from configuration import *
 import detail_course as dc
 import menu_options
 
+
 # ======================================
 # FUNCTIONS
 # ======================================
@@ -23,11 +24,13 @@ def all_courses(app,y='None'):
     app.course_details = False
     app.view_all = True
 
-    # Print a list of all the course names.
+    # Print the course names for each course in the courses collection.
     print('\nCourse Name:\n----------')
     for i in courses.find():
         print(i['Name'])
     print('----------\n')
+
+    # Print a small menu with command options.
     print('Menu:\tNew Course\tRename Course\tDelete Course\tView Course')
 
 
@@ -40,16 +43,24 @@ def add_course(app,y='None'):
     # If it's one of our cancel command synonyms, go back to the All Courses View.
     if course_title.lower() in exit_commands:
         all_courses(app)
-    # Otherwise, add the course to the list of courses, and inform the user this has occurred.
+
+    # Otherwise, check to see if a course with that title already exists.
     elif len(matching_courses) > 0 :
+        # Ask the user if they would like to view the course.
         response = str(input("%s already exists. Would you like to view this course?\n>>>\t"%course_title)).strip().lower()
+
+        # If the response is yes, switch the EventHandler variables accordingly and set the current menu to the Course Details menu.
         if response in confirm_commands:
             app.current_course = matching_courses[0]['_id']
             app.current_menu = menu_options.course_details_menu
             app.course_details = True
             dc.view_course(app)
+
+        # Otherwise, return to the All Courses view.   
         else:
             all_courses(app)
+
+    # Otherwise, add the course to the list of courses, and inform the user this has occurred.
     else:
         Course(course_title)
 
@@ -77,7 +88,7 @@ def rename_course(app,y='None'):
             print("\nSorry, no course of that name could be found. Please try again.")
             rename_course(app)
 
-    # Otherwise, run the new_title function with our target course and old title.
+    # Otherwise, run the new_title function with our old title.
     else:
         new_title(app,old_title)
 

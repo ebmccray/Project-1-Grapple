@@ -15,7 +15,6 @@ from event_handler import EventHandler
 # ======================================
 # EXECUTE
 # ======================================
-
 # Create an Event Handler for this session
 app = EventHandler()
 

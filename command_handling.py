@@ -1,7 +1,7 @@
 # ======================================
 # DESCRIPTION
 # ======================================
-# This script handles all user input and correctly executes it, according to the menu the user is currently in.
+# This script handles all user input, parses it into orders that can be understood by the various functions involved, and then executes the order according to the menu the EventHandler is currently associated with.
 
 
 # ======================================
@@ -33,9 +33,9 @@ def parse_order(app, o):
     else:
         # Split the order to find the first word.
         split_order = o.split('_')
-
         first_word = split_order[0].lower()
 
+        # Match the first word to one of several different cases.
         match first_word:
             case 'view':
                 # If the first word is view, take remaining words in the command and turn it into a single string.
@@ -91,7 +91,7 @@ def view_specific_course(app,course_name):
     if len(target_course) == 0:
         result = False
 
-    # Otherwise, the result is true, and we will switch the properties of the event manage to indicate that we are viewing that course now.
+    # Otherwise, the result is true, and we will switch the properties of the Event Handler to indicate that we are viewing that course now.
     else:
         result = True
         app.course_details = True
@@ -102,7 +102,7 @@ def view_specific_course(app,course_name):
     return result
 
 
-# Change which menu to use when executing orders.
+# Change which menu to use when executing orders in the Event Handler.
 def set_current_menu(app,menu):
     # If the user wishes to go back, set the new menu to the previous menu and set our current menu as the previous menu.
     if menu =='back':

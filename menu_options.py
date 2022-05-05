@@ -1,3 +1,11 @@
+# ======================================
+# DESCRIPTION
+# ======================================
+# This script defines the various different menus available within the program, which commands each menu can handle, and what functions those commands perform.
+
+# ======================================
+# IMPORT
+# ======================================
 import main_menu as mm
 import help
 import course_commands as cc
@@ -6,8 +14,10 @@ import grade
 import assignment_details as ad
 from command_handling import *
 
+
 # Define actions for the different menus in Dictionaries. These can be accessed and executed later via the Key name.
-# Main menu actions.
+
+# Main menu
 main_menu_actions = {
     'default_command': mm.main_menu,
     'help': set_current_menu,
@@ -19,19 +29,20 @@ main_menu_actions = {
     'quit': app_quit,
 }
 
-# Help menu actions
+# Help menu
 help_menu_actions = {
     'default_command': help.main_help,
     'help':help.main_help,
     'view_all': help.course_help,
     'view_course':help.course_detail_help,
+    'view_assignment':help.assignment_detail_help,
     'info':help.app_info,
     'home':set_current_menu,
     'back': set_current_menu,
     'quit': app_quit,
 }
 
-# View courses menu
+# View All Courses menu
 view_courses_menu = {
     'default_command':cc.all_courses,
     'view_all':cc.all_courses,
@@ -45,7 +56,7 @@ view_courses_menu = {
     'quit': app_quit,
 }
 
-# Course detail menu
+# Course Details menu
 course_details_menu = {
     'default_command':dc.view_course,
     'switch_course':dc.switch_course,
@@ -74,6 +85,7 @@ course_details_menu = {
     'quit': app_quit,
 }
 
+# Assignment Details menu
 assignment_details_menu = {
     'default_command':ad.view_assignment_details,
     'view_assignment':ad.view_assignment_details,
@@ -84,6 +96,7 @@ assignment_details_menu = {
     'view_grades':grade.view_grade,
     'set_grades':grade.set_all_grades,
     'edit_grade':grade.edit_grade,
+    'help':help.assignment_detail_help,
     'view_course':set_current_menu,
     'home':set_current_menu,
     'back':set_current_menu,

@@ -1,14 +1,14 @@
 # ======================================
 # DESCRIPTION
 # ======================================
-# This script defines basic configuration variables for the app, such as its name, copyright, and other information.
+# This script defines basic configuration variables for the app, such as its name, creator, and other information.
 # It also defines some universally-used variables, such as the lists of command synonyms.
 
 # ======================================
 # CONFIGURATION VARIABLES
 # ======================================
 app_name = "Grapple"
-app_copyright="Copyright 2022 Erienne McCray"
+app_copyright="Created in 2022 Erienne McCray, employee of Revature."
 
 
 # ======================================
@@ -30,7 +30,7 @@ command_synonyms=[
     ['sort_by_grade','sort_by_total_grade','sort_grade','sort_total_grade','sort_by_grade_ascending','sort_by_grade_asc','sort_by_grade_1','sort_by_total_grade_ascending','sort_by_total_grade_asc','sort_by_total_grade_1','sort_grade_ascending','sort_grade_asc','sort_grade_1','sort_total_grade_ascending','sort_total_grade_asc','sort_total_grade_1','sort_by_grade_lowest_first','sort_grade_lowest_first','sort_total_grade_lowest_first','sort_by_total_grade_lowest_first','sort_by_grade_lowest','sort_grade_lowest','sort_total_grade_lowest','sort_by_total_grade_lowest'],
     ['sort_by_grade_descending','sort_by_grade_desc','sort_by_grade_-1','sort_by_total_grade_descending','sort_by_total_grade_desc','sort_by_total_grade_-1','sort_grade_descending','sort_grade_desc','sort_grade_-1','sort_total_grade_descending','sort_total_grade_desc','sort_total_grade_-1','sort_by_grade_highest_first','sort_grade_highest_first','sort_total_grade_highest_first','sort_by_total_grade_highest_first','sort_by_grade_highest','sort_grade_highest','sort_total_grade_highest','sort_by_total_grade_highest'],
     ['sort_reverse_alphabetical','sort_reverse','sort_by_reverse','sort_by_reverse_alphabetical','sort_by_name_highest_first','sort_by_last_name_highest_first','sort_name_highest_first','sort_last_name_highest_first','sort_by_name_reverse_alphabetical','sort_by_last_name_reverse_alphabetical','sort_by_name_reverse','sort_name_reverse','sort_last_name_reverse'],
-    ['view_assignment','view_assignment_details','assignment_details','assignment_details_view'],
+    ['view_assignment','view_assignment_details','assignment_details','assignment_details_view','assignment_detail','assignment_detail_view'],
     ['switch_assignment','switch_assignments','view_other_assignment'],
     ['add_assignment','new_assignment','add_new_assignment','create_assignment'],
     ['rename_assignment','edit_assignment'],

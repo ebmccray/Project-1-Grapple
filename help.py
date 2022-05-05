@@ -11,7 +11,7 @@ import configuration as config
 # ======================================
 # HELP MESSAGES
 # ======================================
-help_message = '''\nGet help with:\n\tAll Courses View\n\tCourse Detail View\n\tApp Info
+help_message = '''\nGet help with:\n\tAll Courses View\n\tCourse Detail View\n\tAssignment Detail View\n\tApp Info
 If you need additional help, please contact the creator with your questions.'''
 
 course_message = '''\nThe All Courses view shows a list of all your courses.
@@ -38,6 +38,17 @@ Here are some common Course Detail View commands:
 \tedit grade:\t\tChange or enter a grade for a specific student in a given assignment.
 Press enter to return.'''
 
+assignment_detail_message = '''\nThe Assignment Detail View shows the name, total point value, and due date of a given assignment.
+Here are some common Assignment Detail View commands:
+\tswitch assignments:\tChange your view to a different assignment in the same course.
+\tview grades:\t\tSee each student's grades for this assignment.
+\trename assignment:\tChange the name of the assignment.
+\tedit points:\t\tChange how many total points the assignment is worth.
+\tedit due date:\t\tChange the due date for the assignment.
+\tview all assignments:\tReturn to the course details view, with all assignments.
+Press enter to return.'''
+
+
 info_message = "%s"%config.app_copyright
 
 # ======================================
@@ -54,6 +65,9 @@ def course_help(app,y='None'):
 
 def course_detail_help(app,y='None'):
     print(course_detail_message)
+
+def assignment_detail_help(app,y='None'):
+    print(assignment_detail_message)
 
 def app_info(app,y='None'):
     print(info_message)

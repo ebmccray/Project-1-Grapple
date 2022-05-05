@@ -1,7 +1,14 @@
 # ======================================
+# DESCRIPTION
+# ======================================
+# This script uses PyMongo to access the local MongoDB client and defines the primary database and major collections.
+
+
+# ======================================
 # IMPORT
 # ======================================
 from pymongo import *
+
 
 # ======================================
 # DATABASE CONFIGURATION
