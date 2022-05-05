@@ -26,7 +26,7 @@ def all_courses(app,y='None'):
 
     # Print the course names for each course in the courses collection.
     print('\nCourse Name:\n----------')
-    for i in courses.find():
+    for i in courses.find().sort('Name'):
         print(i['Name'])
     print('----------\n')
 
